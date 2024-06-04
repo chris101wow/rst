@@ -7,7 +7,8 @@ class Schedule(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
     duration = db.Column(db.Integer)
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    timeh = db.Column(db.Integer)
+    timem = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
