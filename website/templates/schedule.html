@@ -1,0 +1,18 @@
+{% extends "base.html" %} {% block title %}Schedules{% endblock %}
+{% block content %}
+{% if no_sched == 0 %}
+<h1 class="title">
+    You Have No Schedules.
+</h1>
+{% endif%}
+
+<figure>
+<a href="/add_sched"> <img src="{{ url_for('static', filename='add_new.svg')}}" width="25%" class="add_new" ></a>
+
+<figcaption>
+    <h2 style="text-align: center;margin-top: 10px;">
+        Add New Schedule
+    </h2>
+</figcaption>
+</figure>
+{% endblock %}
