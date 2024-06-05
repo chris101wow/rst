@@ -30,7 +30,8 @@ def home():
 @views.route("/schedules")
 @login_required
 def schedule():
-    return render_template("schedule.html", user=current_user,no_sched = len(current_user.Schedule))
+    return render_template("schedule.html", user=current_user,no_sched = len(current_user.Schedule) ,schedules = Schedule.query.all()
+)
 
 @views.route('/add_sched', methods=["GET","POST"])
 @login_required
@@ -56,12 +57,14 @@ def add_sched():
                 elif duration < 0:
                     flash("Duration must be greater than 0 seconds." ,category='error')
                 else:
-                    print()
                     new_schedule = Schedule(name=name_of_schedule,timeh=int(convert24(str(TODh) +" "+per_of_day)),timem=TODm,timeh12=TODh,per_of_day=per_of_day,duration=duration,user_id=current_user.id)
                     db.session.add(new_schedule)
                     db.session.commit()
+                    schedules = Schedule.query.all()
+                    for i in schedules:
+                        print(i.name)
                     flash("Added succesfully" , "succes")
-                    return redirect(url_for('views.home'))
+                    return redirect(url_for('views.schedule'))
             else:
 
                 flash("You have to input a value for duration." ,category='error')

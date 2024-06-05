@@ -6,7 +6,7 @@
 </h1>
 {% endif%}
 <ul class="list-group list-group-flush" id="notes">
-{% for sched in user.Schedule %}
+{% for sched in schedules %}
   <li class="list-group-item">
     {{ sched.name }}
     <ul>
@@ -16,6 +16,9 @@
         <li>
             How long: {{sched.duration}} seconds
         </li>
+        <li>
+          How long: {{sched.id}} seconds
+      </li>
 
     </ul>
     <button type="button" class="close">
