@@ -5,7 +5,25 @@
     You Have No Schedules.
 </h1>
 {% endif%}
+<ul class="list-group list-group-flush" id="notes">
+{% for sched in user.Schedule %}
+  <li class="list-group-item">
+    {{ sched.name }}
+    <ul>
+        <li>
+            When: {{sched.timeh12}}:{{sched.timem}} {{sched.per_of_day}}
+        </li>
+        <li>
+            How long: {{sched.duration}} seconds
+        </li>
 
+    </ul>
+    <button type="button" class="close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </li>
+  {% endfor %}
+</ul>
 <figure>
 <a href="/add_sched"> <img src="{{ url_for('static', filename='add_new.svg')}}" width="25%" class="add_new" ></a>
 

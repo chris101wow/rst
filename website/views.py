@@ -1,8 +1,16 @@
 from flask import Blueprint,url_for,render_template,request,redirect,flash
 from flask_login import login_required, current_user
 import time
+from . import db
 from .models import Schedule
-
+from datetime import datetime
+ 
+def convert24(time):
+    # Parse the time string into a datetime object
+    t = datetime.strptime(time, '%I %p')
+    # Format the datetime object into a 24-hour time string
+    return t.strftime('%H')
+ 
 # Local time has date and time
 
 
@@ -48,8 +56,14 @@ def add_sched():
                 elif duration < 0:
                     flash("Duration must be greater than 0 seconds." ,category='error')
                 else:
+                    print()
+                    new_schedule = Schedule(name=name_of_schedule,timeh=int(convert24(str(TODh) +" "+per_of_day)),timem=TODm,timeh12=TODh,per_of_day=per_of_day,duration=duration,user_id=current_user.id)
+                    db.session.add(new_schedule)
+                    db.session.commit()
+                    flash("Added succesfully" , "succes")
                     return redirect(url_for('views.home'))
             else:
+
                 flash("You have to input a value for duration." ,category='error')
         else:
             flash("You have to input a value for time." ,category="error")
