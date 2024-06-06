@@ -9,7 +9,7 @@ class Schedule(db.Model):
     duration = db.Column(db.Integer)
     timeh = db.Column(db.Integer)
     timem = db.Column(db.Integer)
-    timeh12 = db.Column(db.Integer)
+    time12 = db.Column(db.String(150))
     per_of_day =db.Column(db.String(10))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 

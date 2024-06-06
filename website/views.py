@@ -11,6 +11,12 @@ def convert24(time):
     # Format the datetime object into a 24-hour time string
     return t.strftime('%H')
  
+def time_format(hrs,min,per):
+    hrs = str(hrs)
+    t = datetime.strptime(str(min), '%M')
+    min = t.strftime('%M')
+    final = hrs+":"+min+" "+per
+    return final
 # Local time has date and time
 
 
@@ -57,7 +63,8 @@ def add_sched():
                 elif duration < 0:
                     flash("Duration must be greater than 0 seconds." ,category='error')
                 else:
-                    new_schedule = Schedule(name=name_of_schedule,timeh=int(convert24(str(TODh) +" "+per_of_day)),timem=TODm,timeh12=TODh,per_of_day=per_of_day,duration=duration,user_id=current_user.id)
+
+                    new_schedule = Schedule( name = name_of_schedule ,timeh = int(convert24(str(TODh)+" "+ per_of_day)) , timem = TODm,time12=time_format(TODh,TODm,per_of_day), per_of_day = per_of_day , duration = duration , user_id = current_user.id)
                     db.session.add(new_schedule)
                     db.session.commit()
                     schedules = Schedule.query.all()
