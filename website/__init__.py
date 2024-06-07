@@ -2,10 +2,14 @@ from flask import Flask,url_for
 from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 # Just giving the database a name and a location 
 db = SQLAlchemy()
 DB_NAME = "database.db"
+scheduler = BackgroundScheduler()
+scheduler.start() 
 def create_app():
     # Initialize flask 
     app = Flask(__name__)
@@ -32,6 +36,7 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(int(id))
+
     # return app to be used by the rest of the files
     return app
 

@@ -1,10 +1,14 @@
 from flask import Blueprint,url_for,render_template,request,redirect,flash
 from flask_login import login_required, current_user
 import time
-from . import db
+from . import db ,scheduler
 from .models import Schedule
 from datetime import datetime
- 
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+
+def myfunc():
+    print("hola")
 def convert24(time):
     # Parse the time string into a datetime object
     t = datetime.strptime(time, '%I %p')
@@ -32,6 +36,16 @@ def tod():
 @login_required
 def home():
     print()
+    # trigger = CronTrigger(
+    #     year="*", month="*", day="*", hour="7", minute="1", second="5"
+    # )
+    
+    # scheduler.add_job(myfunc,
+    # trigger=trigger,
+
+    # name="daily foo",
+    # )
+        
     return render_template("home.html", user=current_user,greet_per = tod())
 @views.route("/schedules")
 @login_required
