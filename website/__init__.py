@@ -5,6 +5,7 @@ from flask_login import LoginManager
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
+
 # Just giving the database a name and a location 
 db = SQLAlchemy()
 DB_NAME = "database.db"
@@ -38,8 +39,8 @@ def create_app():
         return User.query.get(int(id))
 
     # return app to be used by the rest of the files
-    return app
 
+    return app
 
 def create_database(app):
     
@@ -47,3 +48,5 @@ def create_database(app):
         with app.app_context():
             db.create_all()
         print('Created Database!')
+        
+

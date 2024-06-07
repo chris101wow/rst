@@ -36,15 +36,13 @@ def tod():
 @login_required
 def home():
     print()
-    # trigger = CronTrigger(
-    #     year="*", month="*", day="*", hour="7", minute="1", second="5"
-    # )
-    
-    # scheduler.add_job(myfunc,
-    # trigger=trigger,
-
-    # name="daily foo",
-    # )
+    trigger = CronTrigger(
+        year="*", month="*", day="*", hour="9", minute="34", second="0"
+    )
+    scheduler.add_job(myfunc,
+    trigger=trigger,
+    name="daily foo",
+    )
         
     return render_template("home.html", user=current_user,greet_per = tod())
 @views.route("/schedules")
