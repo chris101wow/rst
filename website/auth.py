@@ -1,11 +1,12 @@
 from flask import Blueprint,render_template,request,flash,redirect,url_for
 import re
 from .models import User
-from . import db
+from . import db, scheduler 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
+from website.models import Schedule
 
- 
+
 # Make an expression that all Emails have.
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
  
@@ -27,6 +28,10 @@ auth = Blueprint('auth',__name__)
 
 @auth.route("/login",methods=["GET","POST"])
 def login():
+    from . import setup
+    if len(Schedule.query.all()) > len(scheduler.get_jobs()):
+        schedules = Schedule.query.all()
+        print(schedules,"HEYY")
     if request.method == "POST":
         email = request.form.get('email')
         password = request.form.get('password1')
@@ -55,6 +60,11 @@ def logout():
 
 @auth.route("/signup", methods=["GET","POST"])
 def signup():
+    from . import setup
+    if not setup:
+        schedules = Schedule.query.all()
+        print(schedules,"HEYY")
+        setup = True
     if request.method == "POST":
         email = request.form.get('email')
         first_name = request.form.get('firstName')

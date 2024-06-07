@@ -1,7 +1,7 @@
 from flask import Blueprint,url_for,render_template,request,redirect,flash
 from flask_login import login_required, current_user
 import time
-from . import db ,scheduler
+from . import db , scheduler
 from .models import Schedule
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -35,21 +35,23 @@ def tod():
 @views.route('/',methods=["GET","POST"])
 @login_required
 def home():
-    print()
-    trigger = CronTrigger(
-        year="*", month="*", day="*", hour="9", minute="34", second="0"
-    )
-    scheduler.add_job(myfunc,
-    trigger=trigger,
-    name="daily foo",
-    )
+    from . import setup
+    if len(Schedule.query.all()) > len(scheduler.get_jobs()):
+        schedules = Schedule.query.all()
+        print(schedules,"HEYY")    
+    # trigger = CronTrigger(
+    #     year="*", month="*", day="*", hour="9", minute="34", second="0"
+    # )
+    # scheduler.add_job(myfunc,
+    # trigger=trigger,
+    # name="daily foo",
+    # )
         
     return render_template("home.html", user=current_user,greet_per = tod())
 @views.route("/schedules")
 @login_required
 def schedule():
-    return render_template("schedule.html", user=current_user,no_sched = len(current_user.Schedule) ,schedules = Schedule.query.all()
-)
+    return render_template("schedule.html", user=current_user,no_sched = len(current_user.Schedule) ,schedules = Schedule.query.all())
 
 @views.route('/add_sched', methods=["GET","POST"])
 @login_required
