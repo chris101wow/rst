@@ -9,3 +9,11 @@ function change(){
 
     }
 }
+function deletesched(schedid){
+    fetch("/delete-sched", {
+        method: "POST",
+        body: JSON.stringify({ schedId: schedid }),
+      }).then((_res) => {
+        window.location.href = "/schedules";
+      });
+    }

@@ -11,6 +11,7 @@ class Schedule(db.Model):
     timem = db.Column(db.Integer)
     time12 = db.Column(db.String(150))
     per_of_day =db.Column(db.String(10))
+    data_name = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 

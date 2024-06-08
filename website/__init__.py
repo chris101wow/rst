@@ -5,6 +5,7 @@ from flask_login import LoginManager
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
+
 setup = False
 # Just giving the database a name and a location 
 db = SQLAlchemy()
@@ -39,7 +40,18 @@ def create_app():
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(int(id))
-
+    # if the scheduler has no jobs use the data basde info to load all the jobs
+    if len(scheduler.get_jobs()) == 0:
+        from.views import myfunc
+        with app.app_context():
+            schedules = Schedule.query.all()
+        for i in schedules:
+            trigger = CronTrigger(year="*", month="*", day="*", hour=str(i.timeh), minute=str(i.timem), second="0" )
+            scheduler.add_job(myfunc,trigger=trigger,args=["hello world"],id=i.name,replace_existing=True)
+        #     print(i)
+        #     print(i.timeh, i.timem)
+        # print(scheduler.get_jobs())
+        # print(len(scheduler.get_jobs()))
     # return app to be used by the rest of the files
 
     return app

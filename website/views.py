@@ -1,4 +1,4 @@
-from flask import Blueprint,url_for,render_template,request,redirect,flash
+from flask import Blueprint,url_for,render_template,request,redirect,flash,jsonify
 from flask_login import login_required, current_user
 import time
 from . import db , scheduler
@@ -6,9 +6,10 @@ from .models import Schedule
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+import json
 
-def myfunc():
-    print("hola")
+def myfunc(str):
+    print(str)
 def convert24(time):
     # Parse the time string into a datetime object
     t = datetime.strptime(time, '%I %p')
@@ -34,11 +35,7 @@ def tod():
 
 @views.route('/',methods=["GET","POST"])
 @login_required
-def home():
-    from . import setup
-    if len(Schedule.query.all()) > len(scheduler.get_jobs()):
-        schedules = Schedule.query.all()
-        print(schedules,"HEYY")    
+def home():   
     # trigger = CronTrigger(
     #     year="*", month="*", day="*", hour="9", minute="34", second="0"
     # )
@@ -46,12 +43,12 @@ def home():
     # trigger=trigger,
     # name="daily foo",
     # )
-        
+    print(scheduler.get_jobs()) 
     return render_template("home.html", user=current_user,greet_per = tod())
 @views.route("/schedules")
 @login_required
 def schedule():
-    return render_template("schedule.html", user=current_user,no_sched = len(current_user.Schedule) ,schedules = Schedule.query.all())
+    return render_template("schedule.html", user=current_user,no_sched = len(Schedule.query.all()) ,schedules = Schedule.query.all())
 
 @views.route('/add_sched', methods=["GET","POST"])
 @login_required
@@ -68,7 +65,10 @@ def add_sched():
             TODm = int(TODm)
             if len(duration) > 0:
                 duration = int(duration)
-                if len(name_of_schedule) == 0:
+                sched = Schedule.query.filter_by(name=name_of_schedule).first()
+                if sched:
+                    flash("Name already exsists" ,category='error')
+                elif len(name_of_schedule) == 0:
                     flash("Must enter a name for the schedule" ,category='error')
                 elif TODh > 12  or TODh < 1:
                     flash("Invalid input for hourly time." ,category='error') 
@@ -77,10 +77,14 @@ def add_sched():
                 elif duration < 0:
                     flash("Duration must be greater than 0 seconds." ,category='error')
                 else:
-
-                    new_schedule = Schedule( name = name_of_schedule ,timeh = int(convert24(str(TODh)+" "+ per_of_day)) , timem = TODm,time12=time_format(TODh,TODm,per_of_day), per_of_day = per_of_day , duration = duration , user_id = current_user.id)
+                    schedules = Schedule.query.all()                    
+                    new_schedule = Schedule( name = name_of_schedule ,timeh = int(convert24(str(TODh)+" "+ per_of_day)) , timem = TODm,time12=time_format(TODh,TODm,per_of_day), per_of_day = per_of_day , duration = duration , data_name= len(schedules) +1,user_id = current_user.id)
                     db.session.add(new_schedule)
                     db.session.commit()
+                    trigger = CronTrigger(year="*", month="*", day="*", hour=str(new_schedule.timeh), minute=str(new_schedule.timem), second="0" )
+                    scheduler.add_job(myfunc,trigger=trigger,args=["hello world"],id=new_schedule.name,replace_existing=True)
+                    print(scheduler.get_jobs())
+                   
                     schedules = Schedule.query.all()
                     for i in schedules:
                         print(i.name)
@@ -92,3 +96,14 @@ def add_sched():
         else:
             flash("You have to input a value for time." ,category="error")
     return render_template("add_sched.html", user=current_user)
+@views.route("/delete-sched",methods=['POST'])
+def delete_sched():
+    sched = json.loads(request.data)
+    schedid = sched['schedId']
+    note = Schedule.query.get(schedid)
+    if note:
+        scheduler.remove_job(note.name)
+        db.session.delete(note)
+        db.session.commit()
+        
+    return jsonify({})
